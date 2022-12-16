@@ -1,0 +1,3 @@
+﻿add-migration InitialCreate -o Data/Migrations
+
+especifica donde ponerlas
