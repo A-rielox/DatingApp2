@@ -19,6 +19,7 @@ builder.Services.AddDbContext<DataContext>(options =>
 
 
 
+builder.Services.AddCors();
 
 
 
@@ -37,6 +38,13 @@ if (app.Environment.IsDevelopment()) // *
 //app.UseHttpsRedirection(); // *
 
 //app.UseAuthorization();  // *
+
+
+
+// debe ir entre UseRouting y Endpoint, y antes de Authorization y UseAuthentication
+app.UseCors(x => x.AllowAnyHeader().AllowAnyMethod().WithOrigins("https://localhost:4200"));
+
+
 
 app.MapControllers();
 
