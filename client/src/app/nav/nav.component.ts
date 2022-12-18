@@ -15,6 +15,15 @@ export class NavComponent implements OnInit {
    ngOnInit(): void {
       // yellow         QUITAR
       this.model = { username: 'jim', password: 'P@ssword1' };
+
+      this.getCurrentUser();
+   }
+
+   getCurrentUser() {
+      this.accountService.currentUser$.subscribe({
+         next: (user) => (this.loggedIn = !!user),
+         error: (err) => console.log(err),
+      });
    }
 
    login() {
@@ -29,6 +38,7 @@ export class NavComponent implements OnInit {
    }
 
    logout() {
+      this.accountService.logout();
       this.loggedIn = false;
    }
 }
