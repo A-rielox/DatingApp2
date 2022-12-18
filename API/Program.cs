@@ -1,5 +1,11 @@
 using API.Data;
+using API.Extensions;
+using API.Interfaces;
+using API.Services;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.IdentityModel.Tokens;
+using System.Text;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -10,16 +16,14 @@ builder.Services.AddControllers();
 
 
 
-
-builder.Services.AddDbContext<DataContext>(options =>
-{
-    options.UseSqlite(builder.Configuration.GetConnectionString("DefaultConnection"));
-});
+// p' mi metodo de extension ApplicationServiceExtensions
+builder.Services.AddAplicationServices(builder.Configuration);
 
 
 
 
-builder.Services.AddCors();
+// p' mi metodo de extension AddIdentityServices
+builder.Services.AddIdentityServices(builder.Configuration);
 
 
 
@@ -43,6 +47,22 @@ if (app.Environment.IsDevelopment()) // *
 
 // debe ir entre UseRouting y Endpoint, y antes de Authorization y UseAuthentication
 app.UseCors(x => x.AllowAnyHeader().AllowAnyMethod().WithOrigins("https://localhost:4200"));
+
+
+
+
+
+
+
+
+// antes de MapControllers y despues de UseCors
+app.UseAuthentication(); // checa q el token sea valido
+app.UseAuthorization(); // checa lo q tengo permitido hacer de acuerdo a lo q diga mi token
+
+
+
+
+
 
 
 
