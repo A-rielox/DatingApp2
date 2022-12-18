@@ -16,7 +16,7 @@ export class AppComponent implements OnInit {
       this.http.get('https://localhost:5001/api/Users').subscribe({
          next: (res) => (this.users = res),
          error: (err) => console.log(err),
-         complete: () => console.log('req completed'),
+         complete: () => console.log('FROM AppComponent ----- req completed'),
       });
    }
 }
