@@ -16,10 +16,8 @@ import { MessagesComponent } from './messages/messages.component';
 
 // bootstrap
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
-import { BsDropdownModule } from 'ngx-bootstrap/dropdown';
 
-// toastr
-import { ToastrModule } from 'ngx-toastr';
+import { SharedModule } from './_modules/shared.module';
 
 @NgModule({
    declarations: [
@@ -38,10 +36,7 @@ import { ToastrModule } from 'ngx-toastr';
       HttpClientModule,
       FormsModule,
       BrowserAnimationsModule,
-      BsDropdownModule.forRoot(),
-      ToastrModule.forRoot({
-         positionClass: 'toast-bottom-right',
-      }),
+      SharedModule,
    ],
    providers: [],
    bootstrap: [AppComponent],
