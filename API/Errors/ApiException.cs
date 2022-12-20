@@ -1,5 +1,7 @@
 ﻿namespace API.Errors;
 
+// esta es la respuesta q manda mi ExceptionMiddleware cuando 
+// hay una excepcion
 public class ApiException
 {
     public ApiException(int statusCode, string message = null,
