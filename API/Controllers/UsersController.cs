@@ -1,5 +1,4 @@
 ﻿using API.DTOs;
-using API.Entities;
 using API.Interfaces;
 using AutoMapper;
 using Microsoft.AspNetCore.Authorization;
@@ -7,6 +6,7 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace API.Controllers;
 
+[Authorize]
 public class UsersController : BaseApiController
 {
 	private readonly IUserRepository _userRepository;
@@ -32,7 +32,7 @@ public class UsersController : BaseApiController
 	////////////////////////////////////////////////
 	///////////////////////////////////////////////////
 	// GET: api/Users/userName
-	//[Authorize]
+	// [Authorize]
 	[HttpGet("{username}")]
 	public async Task<ActionResult<MemberDto>> GetUser(string username)
 	{
