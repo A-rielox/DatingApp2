@@ -16,9 +16,6 @@ builder.Services.AddControllers();
 // p' mi metodo de extension ApplicationServiceExtensions
 builder.Services.AddAplicationServices(builder.Configuration);
 
-
-
-
 // p' mi metodo de extension AddIdentityServices
 builder.Services.AddIdentityServices(builder.Configuration);
 
