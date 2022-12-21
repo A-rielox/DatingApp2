@@ -21,6 +21,7 @@ export class AuthGuard implements CanActivate {
             if (user) return true;
             else {
                this.toastr.error('🧙‍♂️ You shall not pass!!! 💥⚡⚡💥');
+
                return false;
             }
          })

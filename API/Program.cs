@@ -35,9 +35,6 @@ app.UseMiddleware<ExceptionMiddleware>();
 
 
 
-
-
-
 if (app.Environment.IsDevelopment()) // *
 {
     app.UseSwagger();
@@ -57,16 +54,9 @@ app.UseCors(x => x.AllowAnyHeader().AllowAnyMethod().WithOrigins("https://localh
 
 
 
-
-
-
 // antes de MapControllers y despues de UseCors
 app.UseAuthentication(); // checa q el token sea valido
 app.UseAuthorization(); // checa lo q tengo permitido hacer de acuerdo a lo q diga mi token
-
-
-
-
 
 
 
@@ -93,8 +83,6 @@ catch (Exception ex)
     var logger = services.GetService<ILogger<Program>>();
     logger.LogError(ex, "An error occurred during migration");
 }
-
-
 
 
 
