@@ -2,6 +2,7 @@
 using API.DTOs;
 using API.Entities;
 using API.Interfaces;
+using AutoMapper;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using System.Security.Cryptography;
@@ -15,11 +16,13 @@ public class AccountController : ControllerBase
 {
     private readonly DataContext _context;
     private readonly ITokenService _tokenService;
+    private readonly IMapper _mapper;
 
-    public AccountController(DataContext context,ITokenService tokenService)
+    public AccountController(DataContext context, ITokenService tokenService, IMapper mapper)
     {
         _context = context;
         _tokenService = tokenService;
+        _mapper = mapper;
     }
 
     ////////////////////////////////////////////////
@@ -30,14 +33,13 @@ public class AccountController : ControllerBase
     {
         if (await UserExists(registerDto.Username)) return BadRequest("Username is taken");
 
+        var user = _mapper.Map<AppUser>(registerDto);
+
         using var hmac = new HMACSHA512();
 
-        var user = new AppUser
-        {
-            UserName = registerDto.Username.ToLower(),
-            PasswordHash = hmac.ComputeHash(Encoding.UTF8.GetBytes(registerDto.Password)),
-            PasswordSalt = hmac.Key
-        };
+        user.UserName = registerDto.Username.ToLower();
+        user.PasswordHash = hmac.ComputeHash(Encoding.UTF8.GetBytes(registerDto.Password));
+        user.PasswordSalt = hmac.Key;
 
         _context.Users.Add(user);
         await _context.SaveChangesAsync();
@@ -45,7 +47,8 @@ public class AccountController : ControllerBase
         var userDto = new UserDto
         {
             Username = user.UserName,
-            Token = _tokenService.CreateToken(user)
+            Token = _tokenService.CreateToken(user),
+            KnownAs = user.KnownAs
         };
 
         return Ok(userDto);
@@ -60,13 +63,13 @@ public class AccountController : ControllerBase
         var user = await _context.Users.Include(u => u.Photos).SingleOrDefaultAsync(u =>
                     u.UserName == loginDto.Username);
 
-        if(user == null) return Unauthorized("Invalid Username.");
+        if (user == null) return Unauthorized("Invalid Username.");
 
         using var hmac = new HMACSHA512(user.PasswordSalt);
 
         var computedHash = hmac.ComputeHash(Encoding.UTF8.GetBytes(loginDto.Password));
 
-        for(int i = 0; i < computedHash.Length; i++)
+        for (int i = 0; i < computedHash.Length; i++)
         {
             if (computedHash[i] != user.PasswordHash[i]) return Unauthorized("Invalid Password.");
         }
@@ -75,7 +78,8 @@ public class AccountController : ControllerBase
         {
             Username = user.UserName,
             Token = _tokenService.CreateToken(user),
-            PhotoUrl = user.Photos.FirstOrDefault(p => p.IsMain)?.Url
+            PhotoUrl = user.Photos.FirstOrDefault(p => p.IsMain)?.Url,
+            KnownAs = user.KnownAs
         };
 
         return Ok(userDto);

@@ -9,6 +9,7 @@ import {
    ValidatorFn,
    Validators,
 } from '@angular/forms';
+import { Router } from '@angular/router';
 
 @Component({
    selector: 'app-register',
@@ -17,15 +18,15 @@ import {
 })
 export class RegisterComponent implements OnInit {
    @Output() cancelRegister = new EventEmitter();
-   model: any = {};
-
    registerForm: FormGroup = new FormGroup({});
    maxDate: Date = new Date(); // inicializa con fecha y hora actual
+   validationErrors: string[] | undefined;
 
    constructor(
       private accountService: AccountService,
       private toastr: ToastrService,
-      private fb: FormBuilder
+      private fb: FormBuilder,
+      private router: Router
    ) {}
 
    ngOnInit(): void {
@@ -71,22 +72,37 @@ export class RegisterComponent implements OnInit {
    }
 
    register() {
-      console.log(this.registerForm.value);
+      // p' dejar solo dia, mes y año en la date
+      const dob = this.getDateOnly(
+         this.registerForm.controls['dateOfBirth'].value
+      );
+      const values = { ...this.registerForm.value, dateOfBirth: dob };
 
-      // this.accountService.register(this.model).subscribe({
-      //    next: (res) => {
-      //       // console.log(res); 🌟
-      //       this.cancel(); // cierro el register form
-      //    },
-      //    error: (err) => {
-      //       console.log(err);
-      //       this.toastr.error(err.error + '  💩');
-      //    },
-      // });
+      this.accountService.register(values).subscribe({
+         next: (res) => {
+            // console.log(res); 🌟
+            this.router.navigateByUrl('/members');
+         },
+         error: (err) => {
+            this.validationErrors = err;
+         },
+      });
    }
 
    cancel() {
       this.cancelRegister.emit(false);
+   }
+
+   private getDateOnly(dob: string | undefined) {
+      if (!dob) return;
+
+      let theDob = new Date(dob);
+
+      return new Date(
+         theDob.setMinutes(theDob.getMinutes() - theDob.getTimezoneOffset())
+      )
+         .toISOString()
+         .slice(0, 10);
    }
 }
 
