@@ -166,9 +166,4 @@ public class UsersController : BaseApiController
 
         return BadRequest("Failed to delete the photo.");
     }
-
-
-
-
-
 }

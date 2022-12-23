@@ -1,28 +1,66 @@
-<form #registerForm="ngForm" (ngSubmit)="register()" autocomplete="off">
+<form [formGroup]="registerForm" (ngSubmit)="register()" autocomplete="off">
    <h2 class="text-center text-primary">Sign up</h2>
    <hr />
 
-   <!--              username -->
-   <div class="mb-3">
-      <input
-         type="text"
-         class="form-control"
-         placeholder="Username"
-         [(ngModel)]="model.username"
-         name="username"
-      />
+   <!--              gender -->
+   <div class="form-group mb-3">
+      <label class="control-label" style="margin-right: 10px">I am a: </label>
+
+      <label class="radio-inline" style="margin-right: 10px">
+         <input type="radio" value="male" formControlName="gender" /> Male
+      </label>
+
+      <label class="radio-inline">
+         <input type="radio" value="female" formControlName="gender" />
+         Female
+      </label>
    </div>
 
+   <!--              username -->
+   <app-text-input
+      [formControl]="$any(registerForm.controls['username'])"
+      [label]="'Username'"
+   ></app-text-input>
+
+   <!--              knownAs -->
+   <app-text-input
+      [formControl]="$any(registerForm.controls['knownAs'])"
+      [label]="'Known As'"
+   ></app-text-input>
+
+   <!--              dateOfBirth -->
+   <app-date-picker
+      [formControl]="$any(registerForm.controls['dateOfBirth'])"
+      [label]="'Date Of Birth'"
+      [maxDate]="maxDate"
+   ></app-date-picker>
+
+   <!--              city -->
+   <app-text-input
+      [formControl]="$any(registerForm.controls['city'])"
+      [label]="'City'"
+   ></app-text-input>
+
+   <!--              country -->
+   <app-text-input
+      [formControl]="$any(registerForm.controls['country'])"
+      [label]="'Country'"
+   ></app-text-input>
+
    <!--              password -->
-   <div class="mb-3">
-      <input
-         type="password"
-         class="form-control"
-         placeholder="Password"
-         [(ngModel)]="model.password"
-         name="password"
-      />
-   </div>
+   <app-text-input
+      [formControl]="$any(registerForm.controls['password'])"
+      [label]="'Password'"
+      [type]="'password'"
+   >
+   </app-text-input>
+
+   <!--              confirmPassword -->
+   <app-text-input
+      [formControl]="$any(registerForm.controls['confirmPassword'])"
+      [label]="'Confirm Password'"
+      [type]="'password'"
+   ></app-text-input>
 
    <!--              botones -->
    <div class="text-center">
@@ -32,3 +70,6 @@
       </button>
    </div>
 </form>
+
+<p>Form value: {{ registerForm.value | json }}</p>
+<p>Form status: {{ registerForm.status | json }}</p>
