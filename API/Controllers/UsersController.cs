@@ -1,6 +1,7 @@
 ﻿using API.DTOs;
 using API.Entities;
 using API.Extensions;
+using API.Helpers;
 using API.Interfaces;
 using AutoMapper;
 using Microsoft.AspNetCore.Authorization;
@@ -25,15 +26,21 @@ public class UsersController : BaseApiController
         _photoService = photoService;
     }
 
-	////////////////////////////////////////////////
-	///////////////////////////////////////////////////
-	// GET: api/Users
-	[HttpGet]
-	public async Task<ActionResult<IEnumerable<MemberDto>>> GetUsers()
+    ////////////////////////////////////////////////
+    ///////////////////////////////////////////////////
+    // GET: api/Users
+    // p'q funcione paginacion PagedList, PaginationHeader, HttpExtensions - AddPaginationHeader, UserParams
+    [HttpGet]
+	public async Task<ActionResult<PagedList<MemberDto>>> GetUsers(
+                                        [FromQuery] UserParams userParams)
 	{
-		var members = await _userRepository.GetMembersAsync();
+		var users = await _userRepository.GetMembersAsync(userParams);
 
-		return Ok(members);
+        // mi metodo de extension HttpExtensions, pone los headers con datos de paginacion
+        Response.AddPaginationHeader(new PaginationHeader(users.CurrentPage,
+            users.PageSize, users.TotalCount, users.TotalPages));
+
+		return Ok(users);
 	}
 
 	////////////////////////////////////////////////

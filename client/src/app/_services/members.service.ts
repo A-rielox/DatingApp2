@@ -1,9 +1,10 @@
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpParams } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { environment } from 'src/environments/environment';
 
 import { Member } from '../_models/member';
 import { map, of } from 'rxjs';
+import { PaginatedResult } from '../_models/pagination';
 
 @Injectable({
    providedIn: 'root',
@@ -11,19 +12,45 @@ import { map, of } from 'rxjs';
 export class MembersService {
    baseUrl = environment.apiUrl;
    members: Member[] = [];
+   paginatedResult: PaginatedResult<Member[]> = new PaginatedResult<Member[]>();
 
    constructor(private http: HttpClient) {}
 
-   getMembers() {
-      if (this.members.length > 0) return of(this.members);
+   getMembers(page?: number, itemsPerPage?: number) {
+      let params = new HttpParams();
 
-      return this.http.get<Member[]>(this.baseUrl + 'users').pipe(
-         map((members) => {
-            this.members = members;
+      if (page && itemsPerPage) {
+         params = params.append('pageNumber', page);
+         params = params.append('pageSize', itemsPerPage);
+      }
 
-            return members;
-         })
-      );
+      // if (this.members.length > 0) return of(this.members);
+
+      // p'q acceder a toda la respuesta y NO solo el body
+      return this.http
+         .get<Member[]>(this.baseUrl + 'users', { observe: 'response', params })
+         .pipe(
+            // map((members) => {
+            //    this.members = members;
+
+            //    return members;
+            // })
+            map((res) => {
+               if (res.body) {
+                  this.paginatedResult.result = res.body;
+               }
+
+               // pagination: {"currentPage":1,"itemsPerPage":5,"totalItems":13,"totalPages":3}
+               const pagination = res.headers.get('Pagination');
+
+               if (pagination) {
+                  this.paginatedResult.pagination = JSON.parse(pagination);
+               }
+
+               return this.paginatedResult;
+            })
+         );
+      // Request URL: https:.../api/users?pageNumber=1&pageSize=5
    }
 
    getMember(username: string) {
