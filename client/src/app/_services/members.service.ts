@@ -5,6 +5,7 @@ import { environment } from 'src/environments/environment';
 import { Member } from '../_models/member';
 import { map, of } from 'rxjs';
 import { PaginatedResult } from '../_models/pagination';
+import { UserParams } from '../_models/userParams';
 
 @Injectable({
    providedIn: 'root',
@@ -12,44 +13,53 @@ import { PaginatedResult } from '../_models/pagination';
 export class MembersService {
    baseUrl = environment.apiUrl;
    members: Member[] = [];
-   paginatedResult: PaginatedResult<Member[]> = new PaginatedResult<Member[]>();
+   // paginatedResult: PaginatedResult<Member[]> = new PaginatedResult<Member[]>();
 
    constructor(private http: HttpClient) {}
 
-   getMembers(page?: number, itemsPerPage?: number) {
+   // getMembers(page?: number, itemsPerPage?: number) { como ya son muchos parametros => mejor creo un object p' pasarlo aca
+   getMembers(userParams: UserParams) {
+      let params = this.getPaginationHeaders(
+         userParams.pageNumber,
+         userParams.pageSize
+      );
+
+      params = params.append('minAge', userParams.minAge);
+      params = params.append('maxAge', userParams.maxAge);
+      params = params.append('gender', userParams.gender);
+
+      return this.getPaginatedResult<Member[]>(this.baseUrl + 'users', params);
+   }
+
+   private getPaginationHeaders(pageNumber: number, pageSize: number) {
       let params = new HttpParams();
 
-      if (page && itemsPerPage) {
-         params = params.append('pageNumber', page);
-         params = params.append('pageSize', itemsPerPage);
-      }
+      params = params.append('pageNumber', pageNumber);
+      params = params.append('pageSize', pageSize);
 
-      // if (this.members.length > 0) return of(this.members);
+      return params;
+   }
 
-      // p'q acceder a toda la respuesta y NO solo el body
-      return this.http
-         .get<Member[]>(this.baseUrl + 'users', { observe: 'response', params })
-         .pipe(
-            // map((members) => {
-            //    this.members = members;
+   private getPaginatedResult<T>(url: string, params: HttpParams) {
+      const paginatedResult: PaginatedResult<T> = new PaginatedResult<T>();
 
-            //    return members;
-            // })
-            map((res) => {
-               if (res.body) {
-                  this.paginatedResult.result = res.body;
-               }
+      // { observe: 'response' } p'q acceder a toda la respuesta y NO solo el body
+      return this.http.get<T>(url, { observe: 'response', params }).pipe(
+         map((res) => {
+            if (res.body) {
+               paginatedResult.result = res.body;
+            }
 
-               // pagination: {"currentPage":1,"itemsPerPage":5,"totalItems":13,"totalPages":3}
-               const pagination = res.headers.get('Pagination');
+            // pagination: {"currentPage":1,"itemsPerPage":5,"totalItems":13,"totalPages":3}
+            const pagination = res.headers.get('Pagination');
 
-               if (pagination) {
-                  this.paginatedResult.pagination = JSON.parse(pagination);
-               }
+            if (pagination) {
+               paginatedResult.pagination = JSON.parse(pagination);
+            }
 
-               return this.paginatedResult;
-            })
-         );
+            return paginatedResult;
+         })
+      );
       // Request URL: https:.../api/users?pageNumber=1&pageSize=5
    }
 
