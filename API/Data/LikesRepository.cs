@@ -1,6 +1,7 @@
 ﻿using API.DTOs;
 using API.Entities;
 using API.Extensions;
+using API.Helpers;
 using API.Interfaces;
 using Microsoft.EntityFrameworkCore;
 
@@ -27,7 +28,7 @@ public class LikesRepository : ILikesRepository
     ////////////////////////////////////////////////
     ///////////////////////////////////////////////////
     //
-    public async Task<IEnumerable<LikeDto>> GetUserLikes(string predicate, int userId)
+    public async Task<PagedList<LikeDto>> GetUserLikes(LikesParams likesParams)
     {
         // la lista de a quienes a dado like - userid = sourceuserid
         // la lista de quienes le han dado like - userid = likeduserid
@@ -35,22 +36,22 @@ public class LikesRepository : ILikesRepository
         var likes = _context.Likes.AsQueryable();
 
         // para los q este user ha dado like
-        if (predicate == "liked")
+        if (likesParams.Predicate == "liked")
         {
-            likes = likes.Where(l => l.SourceUserId == userId);
+            likes = likes.Where(l => l.SourceUserId == likesParams.UserId);
             // selecciona en "users" solo a los q estan en la lista "likes"
             users = likes.Select(l => l.TargetUser);
         }
 
         // los q le han dado like al user actual
-        if (predicate == "likedBy")
+        if (likesParams.Predicate == "likedBy")
         {
-            likes = likes.Where(l => l.TargetUserId == userId );
+            likes = likes.Where(l => l.TargetUserId == likesParams.UserId);
             // selecciona en "users" solo a los q estan en la lista "likes"
             users = likes.Select(l => l.SourceUser );
         }
 
-        var result = await users.Select(u => new LikeDto
+        var result = users.Select(u => new LikeDto
         {
             UserName = u.UserName,
             KnownAs = u.KnownAs,
@@ -58,9 +59,10 @@ public class LikesRepository : ILikesRepository
             PhotoUrl = u.Photos.FirstOrDefault(p => p.IsMain).Url,
             City = u.City,
             Id = u.Id,
-        }).ToListAsync();
+        });
 
-        return result;
+        return await PagedList<LikeDto>.CreateAsync(result, likesParams.PageNumber,
+                                                    likesParams.PageSize) ;
     }
 
     ////////////////////////////////////////////////

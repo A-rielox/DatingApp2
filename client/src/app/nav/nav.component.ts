@@ -34,6 +34,8 @@ export class NavComponent implements OnInit {
          next: (res) => {
             // console.log(res);  {username: 'jim', token: '...'}
             this.router.navigateByUrl('/members');
+
+            // yellow p'q al logearme con otro usuario se reseteen los filtros y me vuelva a cargar los del otro sexo ( por ejemplo ), en este componente inyecto el memberService y aca hago un reset de los userParams
          },
          error: (err) => {
             console.log(err);

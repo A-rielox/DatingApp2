@@ -117,6 +117,23 @@ export class MembersService {
       );
    }
 
+   //          LIKES
+   // para dar like, el username es de a quien se le da el like
+   addLike(username: string) {
+      return this.http.post(this.baseUrl + 'likes/' + username, {});
+   }
+
+   // GET: api/likes?predicate=liked o likedBy
+   // p' agarrar los likes de un user
+   getLikes(predicate: string, pageNumber: number, pageSize: number) {
+      let params = this.getPaginationHeaders(pageNumber, pageSize);
+
+      params = params.append('predicate', predicate);
+
+      return this.getPaginatedResult<Member[]>(this.baseUrl + 'likes', params);
+   }
+
+   //
    //          private
    private getPaginationHeaders(pageNumber: number, pageSize: number) {
       let params = new HttpParams();
