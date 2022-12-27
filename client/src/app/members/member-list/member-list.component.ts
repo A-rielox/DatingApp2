@@ -17,25 +17,14 @@ export class MemberListComponent implements OnInit {
 
    members: Member[] = [];
    pagination: Pagination | undefined;
-   userParams: UserParams | undefined;
-   user: User | undefined;
+   userParams: UserParams | undefined; // aqui estan los filtros
    genderList = [
       { value: 'male', display: 'Males' },
       { value: 'female', display: 'Females' },
    ];
 
-   constructor(
-      private memberService: MembersService,
-      private accountService: AccountService
-   ) {
-      this.accountService.currentUser$.pipe(take(1)).subscribe({
-         next: (user) => {
-            if (user) {
-               this.userParams = new UserParams(user);
-               this.user = user;
-            }
-         },
-      });
+   constructor(private memberService: MembersService) {
+      this.userParams = this.memberService.getUserParams();
    }
 
    ngOnInit(): void {
@@ -44,30 +33,34 @@ export class MemberListComponent implements OnInit {
    }
 
    loadMembers() {
-      if (!this.userParams) return;
+      if (this.userParams) {
+         // los pongo a lo q haya seleccionado
+         this.memberService.setUserParams(this.userParams);
 
-      this.memberService.getMembers(this.userParams).subscribe({
-         next: (res) => {
-            if (res.result && res.pagination) {
-               this.members = res.result;
-               this.pagination = res.pagination;
-            }
-         },
-         // la res.pagination {"currentPage":1,"itemsPerPage":5,"totalItems":13,"totalPages":3}
-      });
+         this.memberService.getMembers(this.userParams).subscribe({
+            next: (res) => {
+               if (res.result && res.pagination) {
+                  this.members = res.result;
+                  this.pagination = res.pagination;
+               }
+            },
+            // la res.pagination {"currentPage":1,"itemsPerPage":5,"totalItems":13,"totalPages":3}
+         });
+      }
    }
 
    resetFilters() {
-      if (this.user) {
-         this.userParams = new UserParams(this.user);
+      this.userParams = this.memberService.resetUserParams();
 
-         this.loadMembers();
-      }
+      this.loadMembers();
    }
 
    pageChanged(e: any) {
       if (this.userParams && this.userParams?.pageNumber !== e.page) {
          this.userParams.pageNumber = e.page;
+
+         // para que tambien cambie en el memberService q es donde esta "respaldado" p' el caso en q se cambia de pagina
+         this.memberService.setUserParams(this.userParams);
 
          this.loadMembers();
       }
