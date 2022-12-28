@@ -6,15 +6,16 @@ import {
    ActivatedRouteSnapshot,
 } from '@angular/router';
 import { Observable, of } from 'rxjs';
+import { MembersService } from '../_services/members.service';
+import { Member } from '../_models/member';
 
 @Injectable({
    providedIn: 'root',
 })
-export class MemberDetailedResolver implements Resolve<boolean> {
-   resolve(
-      route: ActivatedRouteSnapshot,
-      state: RouterStateSnapshot
-   ): Observable<boolean> {
-      return of(true);
+export class MemberDetailedResolver implements Resolve<Member> {
+   constructor(private memberService: MembersService) {}
+
+   resolve(route: ActivatedRouteSnapshot): Observable<Member> {
+      return this.memberService.getMember(route.paramMap.get('username')!);
    }
 }
