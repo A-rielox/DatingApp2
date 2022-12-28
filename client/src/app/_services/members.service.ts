@@ -8,6 +8,7 @@ import { PaginatedResult } from '../_models/pagination';
 import { UserParams } from '../_models/userParams';
 import { AccountService } from './account.service';
 import { User } from '../_models/user';
+import { getPaginatedResult, getPaginationHeaders } from './paginationHelper';
 
 @Injectable({
    providedIn: 'root',
@@ -59,7 +60,7 @@ export class MembersService {
       if (response) return of(response); // 👉 C
 
       // si NO esta "cacheado" (// 👉 C) pasa a esto, y al final los guarda en el "cache"
-      let params = this.getPaginationHeaders(
+      let params = getPaginationHeaders(
          userParams.pageNumber,
          userParams.pageSize
       );
@@ -69,9 +70,10 @@ export class MembersService {
       params = params.append('gender', userParams.gender);
       params = params.append('orderBy', userParams.orderBy);
 
-      return this.getPaginatedResult<Member[]>(
+      return getPaginatedResult<Member[]>(
          this.baseUrl + 'users',
-         params
+         params,
+         this.http
       ).pipe(
          // 👉 C
          map((res) => {
@@ -126,44 +128,14 @@ export class MembersService {
    // GET: api/likes?predicate=liked o likedBy
    // p' agarrar los likes de un user
    getLikes(predicate: string, pageNumber: number, pageSize: number) {
-      let params = this.getPaginationHeaders(pageNumber, pageSize);
+      let params = getPaginationHeaders(pageNumber, pageSize);
 
       params = params.append('predicate', predicate);
 
-      return this.getPaginatedResult<Member[]>(this.baseUrl + 'likes', params);
-   }
-
-   //
-   //          private
-   private getPaginationHeaders(pageNumber: number, pageSize: number) {
-      let params = new HttpParams();
-
-      params = params.append('pageNumber', pageNumber);
-      params = params.append('pageSize', pageSize);
-
-      return params;
-   }
-
-   private getPaginatedResult<T>(url: string, params: HttpParams) {
-      const paginatedResult: PaginatedResult<T> = new PaginatedResult<T>();
-
-      // { observe: 'response' } p'q acceder a toda la respuesta y NO solo el body
-      return this.http.get<T>(url, { observe: 'response', params }).pipe(
-         map((res) => {
-            if (res.body) {
-               paginatedResult.result = res.body;
-            }
-
-            // pagination: {"currentPage":1,"itemsPerPage":5,"totalItems":13,"totalPages":3}
-            const pagination = res.headers.get('Pagination');
-
-            if (pagination) {
-               paginatedResult.pagination = JSON.parse(pagination);
-            }
-
-            return paginatedResult;
-         })
+      return getPaginatedResult<Member[]>(
+         this.baseUrl + 'likes',
+         params,
+         this.http
       );
-      // Request URL: https:.../api/users?pageNumber=1&pageSize=5
    }
 }

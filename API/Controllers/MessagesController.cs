@@ -83,7 +83,7 @@ namespace API.Controllers
 
         ////////////////////////////////////////////////
         ///////////////////////////////////////////////////
-        // GET:  api/messages
+        // GET:  api/messages/thread/{username}
         [HttpGet("thread/{username}")]
         public async Task<ActionResult<IEnumerable<MessageDto>>> GetMessagesThread(string username)
         {
