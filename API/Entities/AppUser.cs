@@ -38,8 +38,8 @@ public class AppUser
 
     ////////////////////////////
 
-    //public ICollection<Message> MessagesSent { get; set; }
-    //public ICollection<Message> MessagesReceived { get; set; }
+    public List<Message> MessagesSent { get; set; }
+    public List<Message> MessagesReceived { get; set; }
 
     ////////////////////////////
 

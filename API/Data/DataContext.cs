@@ -11,6 +11,7 @@ public class DataContext : DbContext
 
     public DbSet<AppUser> Users { get; set; }
     public DbSet<UserLike> Likes { get; set; }
+    public DbSet<Message> Messages { get; set; }
 
     protected override void OnModelCreating(ModelBuilder builder)
     {
@@ -34,30 +35,18 @@ public class DataContext : DbContext
             .HasForeignKey(s => s.TargetUserId)
             .OnDelete(DeleteBehavior.Cascade);
         // si uso sqlServer => uno de los dos OnDelete debe ser distinto como OnDelete.NoAction
-    }
-}
-
-
-/*
-
-// p' configurar el 2way-binding de los likes
-    protected override void OnModelCreating(ModelBuilder builder)
-    {
-        base.OnModelCreating(builder);
-
-        ...
 
         //-------- p' Message
         builder.Entity<Message>()
-            .HasOne(u => u.Sender)
-            .WithMany(m => m.MessagesSent)
+            .HasOne(m => m.Sender)
+            .WithMany(u => u.MessagesSent)
             .OnDelete(DeleteBehavior.Restrict);
 
+        // en ambas queda especificada la foreign key por convencion ( RecipientId y SenderId )
+
         builder.Entity<Message>()
-            .HasOne(u => u.Recipient)
-            .WithMany(m => m.MessagesReceived)
+            .HasOne(m => m.Recipient)
+            .WithMany(u => u.MessagesReceived)
             .OnDelete(DeleteBehavior.Restrict);
     }
 }
- 
- */
