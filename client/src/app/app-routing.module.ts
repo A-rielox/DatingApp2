@@ -13,12 +13,14 @@ import { MemberEditComponent } from './members/member-edit/member-edit.component
 import { PreventUnsavedChangesGuardGuard } from './_guards/prevent-unsaved-changes-guard.guard';
 import { MemberDetailedResolver } from './_resolvers/member-detailed.resolver';
 import { AdminPanelComponent } from './admin/admin-panel/admin-panel.component';
+import { AdminGuard } from './_guards/admin.guard';
 
 const routes: Routes = [
    { path: '', component: HomeComponent },
    {
       path: '',
       runGuardsAndResolvers: 'always',
+      // AuthGuard p'q este autenticado
       canActivate: [AuthGuard],
       children: [
          { path: 'members', component: MemberListComponent },
@@ -34,7 +36,12 @@ const routes: Routes = [
          },
          { path: 'lists', component: ListsComponent },
          { path: 'messages', component: MessagesComponent },
-         { path: 'admin', component: AdminPanelComponent },
+         {
+            path: 'admin',
+            component: AdminPanelComponent,
+            // AdminGuard p'q sea Admin o Moderator
+            canActivate: [AdminGuard],
+         },
       ],
    },
    { path: 'errors', component: TestErrorComponent },
