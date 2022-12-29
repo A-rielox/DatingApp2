@@ -1,12 +1,13 @@
 ﻿using API.Extensions;
+using Microsoft.AspNetCore.Identity;
 
 namespace API.Entities;
 
-public class AppUser
+public class AppUser : IdentityUser<int>
 {
-    public int Id { get; set; }
-    public string UserName { get; set; }
-    public byte[] PasswordHash { get; set; }
+    // public int Id { get; set; }
+    // public string UserName { get; set; }
+    // public byte[] PasswordHash { get; set; }
     public byte[] PasswordSalt { get; set; }
     public DateOnly DateOfBirth { get; set; }
     public string KnownAs { get; set; }
@@ -42,9 +43,15 @@ public class AppUser
     public List<Message> MessagesReceived { get; set; }
 
     ////////////////////////////
+    // es la misma navigation-property hacia la join-table en AppUser.cs y AppRole.cs
+    public ICollection<AppUserRole> UserRoles { get; set; }
 
-    //public ICollection<AppUserRole> UserRoles { get; set; }
 
+
+
+    //
+    //
+    //
     // NO lo puedo incluir para q funcione el :
     // .ProjectTo<MemberDto>(_mapper.ConfigurationProvider) en UserRepository
     // q es p' hacer + eficiente la busqueda en la db
