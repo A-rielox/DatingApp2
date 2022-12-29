@@ -30,6 +30,7 @@ public class UsersController : BaseApiController
     ///////////////////////////////////////////////////
     // GET: api/Users
     // p'q funcione paginacion PagedList, PaginationHeader, HttpExtensions - AddPaginationHeader, UserParams
+    // [Authorize(Roles ="Admin")]
     [HttpGet]
 	public async Task<ActionResult<PagedList<MemberDto>>> GetUsers(
                                         [FromQuery] UserParams userParams)
@@ -52,11 +53,11 @@ public class UsersController : BaseApiController
 		return Ok(users);
 	}
 
-	////////////////////////////////////////////////
-	///////////////////////////////////////////////////
-	// GET: api/Users/userName
-	// [Authorize]
-	[HttpGet("{username}")]
+    ////////////////////////////////////////////////
+    ///////////////////////////////////////////////////
+    // GET: api/Users/userName
+    // [Authorize(Roles = "Member")] solo Member, NO Admin NI Moderator
+    [HttpGet("{username}")]
 	public async Task<ActionResult<MemberDto>> GetUser(string username)
 	{
 		var member = await _userRepository.GetMemberAsync(username);

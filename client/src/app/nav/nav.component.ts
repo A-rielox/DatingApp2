@@ -22,7 +22,7 @@ export class NavComponent implements OnInit {
 
    ngOnInit(): void {
       // yellow         QUITAR
-      this.model = { username: 'lisa', password: 'P@ssword1' };
+      this.model = { username: 'lisa', password: 'P@ssw0rd' };
 
       // this.currentUser$ = this.accountService.currentUser$;  ✌
    }
