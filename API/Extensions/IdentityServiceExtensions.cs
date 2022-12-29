@@ -22,6 +22,11 @@ public static class IdentityServiceExtensions
           .AddEntityFrameworkStores<DataContext>(); // este es el q crea las tablas relacionadas a Identity
 
 
+
+
+        //
+        //      SIEMPRE primero Authentication y luego Authorization
+
         services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
             .AddJwtBearer(options =>
                 {
@@ -33,6 +38,17 @@ public static class IdentityServiceExtensions
                         ValidateAudience = false,
                     };
                 });
+
+
+        //
+        // CONFIFURACION  de las policies p' el acceso
+        services.AddAuthorization(opt =>
+        {
+            opt.AddPolicy("RequireAdminRole", policy => policy.RequireRole("Admin"));
+            opt.AddPolicy("ModeratePhotoRole", policy => policy.RequireRole("Admin", "Moderator"));
+        });
+
+
 
         return services;
     }
