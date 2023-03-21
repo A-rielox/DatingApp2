@@ -47,6 +47,8 @@ export class TestErrorComponent implements OnInit {
          next: (res) => console.log(res),
          error: (err) => {
             console.log(err);
+
+            // el err es el " throw modalStateErrors.flat(); " q tiro en el interceptor
             this.validationErrors = err;
          },
       });

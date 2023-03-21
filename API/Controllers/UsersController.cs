@@ -96,6 +96,9 @@ public class UsersController : BaseApiController
     [HttpPost("add-photo")]
     public async Task<ActionResult<PhotoDto>> AddPhoto(IFormFile file)
     {
+        // al probar en postman la "key" q mando en el body se debe llamar como le pongo aca
+        // el paramatro " File "
+
         var user = await _userRepository.GetUserByUsernameAsync(User.GetUsername());
         var result = await _photoService.AddPhotoAsync(file);
 

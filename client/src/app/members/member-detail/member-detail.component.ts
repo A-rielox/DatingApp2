@@ -33,6 +33,7 @@ export class MemberDetailComponent implements OnInit {
 
    ngOnInit(): void {
       // this.loadMember();
+      // AGARRO EL MEMBER DEL RESOLVER
       this.route.data.subscribe({
          next: (data) => (this.member = data['member']),
       });

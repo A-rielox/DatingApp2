@@ -32,6 +32,7 @@ export class ErrorInterceptor implements HttpInterceptor {
                            }
                         }
 
+                        // el error q tiro aca se agarra en el ".subscribe({ error: ... })" ( en el error del subscribe del request
                         throw modalStateErrors.flat();
                      } else if (typeof error.error === 'object') {
                         this.toastr.error(
@@ -55,6 +56,7 @@ export class ErrorInterceptor implements HttpInterceptor {
                      break;
 
                   case 500:
+                     // p' mandar la info al componente al q redirecciono
                      const navigationExtras: NavigationExtras = {
                         state: { error: error.error },
                      };

@@ -54,6 +54,7 @@
             [queryParams]="{ tab: 'Messages' }"
          >
             <td>{{ message.content }}</td>
+
             <td>
                <div *ngIf="container === 'Outbox'">
                   <img
@@ -65,6 +66,7 @@
                   />
                   <strong>{{ message.recipientUsername | titlecase }}</strong>
                </div>
+
                <div *ngIf="container !== 'Outbox'">
                   <img
                      class="img-circle rounded-circle me-2"
@@ -76,6 +78,7 @@
             </td>
 
             <td>{{ message.messageSent | timeago }}</td>
+
             <td>
                <button
                   (click)="$event.stopPropagation()"
