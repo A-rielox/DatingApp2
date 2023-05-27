@@ -14,4 +14,4 @@ public class UserLike
 }
 
 // un SourceUser puede tener varios LikedUsers
-// un LikedUser puede tener varios LikedByUsers
+// un LikedUser puede tener varios LikedByUsers 

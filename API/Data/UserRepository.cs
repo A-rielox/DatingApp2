@@ -77,6 +77,17 @@ public class UserRepository : IUserRepository
             .FirstOrDefaultAsync();
 
         return member;
+
+
+        // sin AutoMapper
+        // return await _context.Users
+        //                 .Where(u => u.UserName == username)
+        //                 .Select(u => new MemberDto
+        //                 {
+        //                     Id = u.Id,
+        //                     UserName = u.UserName,
+        //                     KnownAs = u.KnownAs,
+        //                 }).FirstOrDefaultAsync();
     }
 
     ////////////////////////////////////////////////
